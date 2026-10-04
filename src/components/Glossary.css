@@ -1,0 +1,158 @@
+.reading {
+  background: var(--washi);
+  color: var(--sumi);
+  color-scheme: light;
+}
+
+.reading :focus-visible {
+  outline-color: var(--sumi);
+}
+
+.reading__head {
+  display: grid;
+  gap: 1rem;
+  max-width: 32rem;
+  margin-bottom: clamp(1rem, 3vw, 2rem);
+}
+
+.reading__title {
+  font-size: var(--t-body);
+  font-weight: 600;
+  max-width: 34ch;
+}
+
+.reading__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 26rem);
+  gap: clamp(1.5rem, 4vw, 4rem);
+  align-items: start;
+}
+
+.reading__plate {
+  --plate-h: clamp(22rem, 46vw, 40rem);
+  position: sticky;
+  top: max(1rem, calc((calc(100 * var(--vh)) - var(--plate-h)) / 2));
+  height: var(--plate-h);
+}
+
+.reading__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* 44px hit area, 28px visible disc. Positioned each frame by transform; hidden until placed. */
+.reading__marker {
+  position: absolute;
+  left: 0;
+  top: 0;
+  visibility: hidden;
+  will-change: transform;
+  width: var(--tap);
+  height: var(--tap);
+  margin: calc(var(--tap) / -2) 0 0 calc(var(--tap) / -2);
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font: 600 var(--t-label) / 1 var(--font-mono);
+  color: var(--sumi);
+}
+.reading__marker[data-placed] {
+  visibility: visible;
+}
+.reading__marker span {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--washi);
+  border: 1.5px solid var(--sumi);
+  box-shadow: 0 2px 10px rgba(17, 19, 21, 0.25);
+  transition:
+    transform 0.35s var(--ease-spring),
+    background-color 0.2s ease;
+}
+.reading__marker:hover span,
+.reading__marker[data-active="true"] span {
+  background: var(--kin);
+  transform: scale(1.15);
+}
+.reading__marker:active span {
+  transform: scale(0.95);
+}
+
+.reading__list,
+.reading__elsewhere {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.25rem;
+}
+
+.reading__term {
+  display: grid;
+  grid-template-columns: 2.25rem 1fr;
+  gap: 0.5rem;
+  padding: 0.6rem 0.5rem;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+.reading__term[data-active="true"] {
+  background: rgba(17, 19, 21, 0.06);
+}
+.reading__term[data-active="true"] .reading__num {
+  background: var(--kin);
+}
+
+.reading__num {
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 1.5px solid var(--sumi);
+  border-radius: 50%;
+  letter-spacing: 0;
+  transition: background-color 0.2s ease;
+}
+
+.reading__elsewhere-label {
+  margin-top: 2rem;
+  margin-bottom: 0.5rem;
+  color: var(--ink-muted);
+}
+
+.reading__elsewhere li {
+  display: grid;
+  padding: 0.5rem 0.5rem 0.25rem;
+  border-top: 1.5px solid rgba(17, 19, 21, 0.12);
+}
+
+@media (max-width: 900px) {
+  .reading__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .reading__plate {
+    position: relative;
+    top: auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .reading__plate {
+    height: min(120vw, 34rem);
+  }
+}
+
+.reading__marker:focus-visible {
+  outline: none;
+}
+.reading__marker:focus-visible span {
+  outline: 2px solid var(--sumi);
+  outline-offset: 3px;
+}

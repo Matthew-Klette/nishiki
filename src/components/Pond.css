@@ -1,0 +1,69 @@
+.pond {
+  position: relative;
+  isolation: isolate;
+  min-height: max(calc(92 * var(--vh)), 38rem);
+  display: grid;
+  background: var(--pond);
+  color: var(--washi);
+  overflow: clip;
+}
+
+.pond__water {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(80% 70% at 60% 40%, #17302b 0%, var(--pond) 70%),
+    var(--pond);
+  touch-action: manipulation;
+  cursor: crosshair;
+}
+
+.pond__kanji {
+  position: absolute;
+  right: 4vw;
+  bottom: -4vw;
+  font-weight: 700;
+  font-size: min(52vw, 46rem);
+  line-height: 1;
+  letter-spacing: 0;
+  color: #13241f;
+  user-select: none;
+  pointer-events: none;
+}
+
+.pond__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.pond__copy {
+  position: relative;
+  z-index: 1;
+  align-self: end;
+  display: grid;
+  gap: 1rem;
+  max-width: 26rem;
+  margin: var(--gutter);
+  padding: 1.5rem;
+  border-radius: 18px;
+  background: rgba(12, 23, 22, 0.86);
+  border: 1px solid rgba(244, 237, 224, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.pond__title {
+  font-size: var(--t-body);
+  font-weight: 700;
+}
+
+.pond__body {
+  color: var(--washi-muted);
+  text-wrap: pretty;
+}
+
+.pond__cta {
+  justify-self: start;
+}

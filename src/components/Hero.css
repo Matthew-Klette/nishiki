@@ -1,0 +1,169 @@
+.hero {
+  position: relative;
+  isolation: isolate;
+  min-height: max(calc(100 * var(--vh)), 640px);
+  overflow: clip;
+  color: var(--washi);
+  background:
+    radial-gradient(120% 90% at 50% 42%, var(--vermilion-hi) 0%, var(--vermilion) 52%, var(--vermilion-lo) 100%);
+  touch-action: manipulation;
+  cursor: crosshair;
+}
+
+.hero__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+/* The fish swims between two copies of the word: behind the front letters, over the rest. */
+.hero__canvas {
+  z-index: 2;
+}
+.hero__title.hero__title--front {
+  z-index: 3;
+}
+.hero__ghost {
+  color: transparent;
+}
+
+/* Back plane: the name, as big as the screen allows. */
+.hero__title {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  /* Leaves a lane on the right for the vertical caption. */
+  padding: 0 calc(var(--gutter) + 2.75rem) 0 var(--gutter);
+  pointer-events: none;
+  user-select: none;
+}
+
+.hero__word {
+  display: block;
+  color: var(--washi);
+}
+
+.hero__word--latin:not([data-fitted]) {
+  visibility: hidden;
+}
+
+.hero__word--latin {
+  width: max-content;
+  white-space: nowrap;
+  margin-top: -calc(6 * var(--vh));
+  /* JS fits this to the content width; this is the no-JS fallback. */
+  font-size: 19vw;
+}
+
+.hero__word--kanji {
+  display: none;
+  writing-mode: vertical-rl;
+  font-weight: 700;
+  font-size: min(calc(29 * var(--vh)), 62vw); /* the vertical line box is ~1.45em wide */
+  line-height: 1;
+  letter-spacing: 0;
+  margin-top: -calc(10 * var(--vh));
+}
+
+/* Front plane: controls overlap the fish. */
+.hero__front {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  padding: 0 var(--gutter) clamp(1.5rem, 4vw, 3rem);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: 1fr auto;
+  align-items: end;
+  column-gap: 2rem;
+}
+.hero__front a,
+.hero__front button {
+  pointer-events: auto;
+}
+
+.hero__intro {
+  grid-column: 1;
+  grid-row: 2;
+  display: grid;
+  gap: 1rem;
+  max-width: 26rem;
+}
+
+.hero__lede {
+  max-width: 34ch;
+  text-wrap: pretty;
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.hero__aside {
+  position: absolute;
+  right: var(--gutter);
+  top: 50%;
+  transform: translateY(-58%);
+  display: flex;
+  gap: 0.6rem;
+  margin: 0;
+}
+
+.hero__hint {
+  grid-column: 2;
+  grid-row: 2;
+  justify-self: end;
+  text-align: right;
+  max-width: 14rem;
+}
+
+/* Portrait phones: the name becomes vertical kanji the fish can weave through. */
+@media (max-aspect-ratio: 4/5) {
+  .hero__word--latin {
+    display: none;
+  }
+  .hero__word--kanji {
+    display: block;
+  }
+  .hero__title {
+    place-items: start center;
+    padding: max(5.5rem, calc(11 * var(--vh))) var(--gutter) 0;
+  }
+  .hero__word--kanji {
+    margin-top: 0;
+  }
+  .hero__front {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .hero__aside {
+    display: none;
+  }
+  .hero__front {
+    grid-template-rows: 1fr auto auto;
+  }
+  .hero__hint {
+    grid-column: 1;
+    grid-row: 3;
+    justify-self: start;
+    text-align: left;
+    max-width: none;
+    padding-top: 1rem;
+  }
+  .hero__actions .btn {
+    flex: 1 1 auto;
+  }
+}
+
+@media (max-height: 700px) and (min-aspect-ratio: 4/5) {
+  .hero__lede {
+    display: none;
+  }
+}

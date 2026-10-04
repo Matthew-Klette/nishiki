@@ -1,0 +1,10 @@
+# Nishiki
+
+> A design concept: a field guide to eight koi varieties (Kohaku, Taishō Sanke, Shōwa Sanshoku, Tanchō, Shiro Utsuri, Asagi, Shūsui, Ōgon), drawn live in code. Nishiki is a fictional publisher; there is no shop or company behind it.
+
+## Sections
+
+- [The varieties](/#varieties): one stage, eight patterns, with what to look for and what each is confused with.
+- [Reading a koi](/#reading): judging vocabulary (hi, sumi, shiroji, kiwa, sashi, menware, motoguro, doitsu, fukurin, tanchō).
+- [Name that koi](/#play): a six-round identification game with procedurally drawn fish.
+- [The pond](/#pond): an interactive pond; tap to feed.

@@ -1,0 +1,120 @@
+/* ---- Masthead: sits over the hero, scrolls away with it ---- */
+
+.masthead {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: clamp(0.75rem, 2vw, 1.5rem) var(--gutter);
+  color: var(--washi);
+}
+
+.masthead__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: var(--tap);
+  text-decoration: none;
+}
+
+.masthead__mark {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+  font-size: var(--t-body);
+}
+
+.masthead__nav {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: clamp(0rem, 1.5vw, 1.25rem);
+}
+
+.masthead__link,
+.masthead__brand {
+  /* Keeps the labels legible if a pale fin drifts underneath them. */
+  text-shadow: 0 0 10px rgba(132, 12, 21, 0.9), 0 0 2px rgba(132, 12, 21, 0.8);
+}
+
+.masthead__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  min-width: var(--tap);
+  justify-content: center;
+  padding: 0 0.5rem;
+  text-decoration: none;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1.5px;
+  background-position: 50% calc(50% + 0.95em);
+  background-repeat: no-repeat;
+  transition: background-size 0.35s var(--ease-out);
+}
+.masthead__link:hover {
+  background-size: calc(100% - 1rem) 1.5px;
+}
+
+@media (max-width: 560px) {
+  .masthead__nav {
+    display: none;
+  }
+}
+
+/* ---- Footer ---- */
+
+.footer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(2rem, 4vw, 3rem);
+  padding: clamp(4rem, 8vw, 6rem) var(--gutter) 2rem;
+  background: var(--sumi);
+  color: var(--washi);
+}
+
+.footer__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.footer__mark {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+}
+
+.footer__cols {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: 1.5rem 3rem;
+  color: var(--washi-muted);
+  max-width: 72rem;
+}
+.footer__cols strong {
+  color: var(--washi);
+}
+
+.footer__base {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding-top: 1.5rem;
+  border-top: 1.5px solid var(--slate-hi);
+  color: var(--washi-muted);
+}
+.footer__base .text-link {
+  color: var(--washi);
+}
