@@ -1,5 +1,7 @@
 # Nishiki
 
+[![CI](https://github.com/Matthew-Klette/nishiki/actions/workflows/ci.yml/badge.svg)](https://github.com/Matthew-Klette/nishiki/actions/workflows/ci.yml)
+
 A field guide to eight koi varieties, drawn live in code. Portfolio project #2 by Matt Klette.
 **Concept work:** Nishiki is a fictional publisher; there is no company, shop or product behind it.
 
