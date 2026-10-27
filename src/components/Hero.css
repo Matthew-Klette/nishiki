@@ -54,7 +54,7 @@
 .hero__word--latin {
   width: max-content;
   white-space: nowrap;
-  margin-top: -calc(6 * var(--vh));
+  margin-top: calc(-6 * var(--vh));
   /* JS fits this to the content width; this is the no-JS fallback. */
   font-size: 19vw;
 }
@@ -66,7 +66,7 @@
   font-size: min(calc(29 * var(--vh)), 62vw); /* the vertical line box is ~1.45em wide */
   line-height: 1;
   letter-spacing: 0;
-  margin-top: -calc(10 * var(--vh));
+  margin-top: calc(-10 * var(--vh));
 }
 
 /* Front plane: controls overlap the fish. */
@@ -93,6 +93,12 @@
   display: grid;
   gap: 1rem;
   max-width: 26rem;
+}
+
+/* Same halo as the masthead: the copy stays legible when a pale fin or tail drifts underneath it. */
+.hero__intro > p,
+.hero__hint {
+  text-shadow: 0 0 10px rgba(132, 12, 21, 0.9), 0 0 2px rgba(132, 12, 21, 0.8);
 }
 
 .hero__lede {
@@ -165,5 +171,18 @@
 @media (max-height: 700px) and (min-aspect-ratio: 4/5) {
   .hero__lede {
     display: none;
+  }
+}
+
+/* Landscape phones: the hero is one screen, not 640px, so the intro and buttons are above the fold. */
+@media (max-height: 500px) and (min-aspect-ratio: 4/5) {
+  .hero {
+    min-height: max(calc(100 * var(--vh)), 20rem);
+  }
+  .hero__aside {
+    display: none;
+  }
+  .hero__title {
+    padding-right: var(--gutter);
   }
 }

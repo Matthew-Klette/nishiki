@@ -219,6 +219,7 @@ describe("palette meets WCAG AA", () => {
     ["washi", "slate-hi"],
     ["washi-muted", "slate"],
     ["washi-muted", "sumi"],
+    ["washi-muted", "pond"],
     ["washi", "pond"],
     ["sumi", "washi"],
     ["ink-muted", "washi"],

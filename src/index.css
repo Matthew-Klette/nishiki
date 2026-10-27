@@ -12,7 +12,7 @@
   --slate-hi: #2a3237;
   --pond: #0c1716;
   --washi: #f4ede0;
-  --washi-muted: #b9b2a6; /* secondary text on dark surfaces only */
+  --washi-muted: #cdc6ba; /* secondary text on dark surfaces only */
   --ink-muted: #5a5249; /* secondary text on washi only */
   --kin: #f5b82e; /* the one tap colour */
   --kin-press: #e3a51b;
@@ -23,7 +23,7 @@
 
   --t-display: clamp(4.5rem, 19vw, 22rem);
   --t-body: 1rem;
-  --t-label: 0.75rem;
+  --t-label: 0.875rem;
 
   --gutter: clamp(1rem, 4vw, 3.5rem);
   --tap: 44px;
@@ -133,9 +133,10 @@ p {
   font-family: var(--font-mono);
   font-size: var(--t-label);
   font-weight: 500;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   line-height: 1.5;
+  text-wrap: balance;
 }
 
 .label--tracked {
@@ -231,7 +232,7 @@ p {
 
 .section {
   position: relative;
-  padding: clamp(5rem, 12vw, 10rem) var(--gutter);
+  padding: clamp(4.5rem, 10vw, 8.5rem) var(--gutter);
   isolation: isolate;
 }
 

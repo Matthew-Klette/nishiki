@@ -63,10 +63,11 @@ const isPortrait = (width: number, height: number) => height > width * 1.1;
 
 function swimParams(width: number, height: number): SwimParams {
   // With butterfly fins the whole fish is ~1.55 body lengths long, so the body itself stays modest.
-  // Scales with the screen; the height term keeps it in proportion on ultrawide monitors.
+  // Scales with the screen; the height term keeps it in proportion on ultrawide monitors and,
+  // below the usual minimum, on phones held sideways.
   const length = isPortrait(width, height)
     ? clamp(Math.min(width * 0.5, height * 0.36), 170, 520)
-    : clamp(Math.min(width * 0.27, height * 0.42), 220, 1100);
+    : clamp(Math.min(width * 0.27, height * 0.42), Math.min(220, height * 0.42), 1100);
   return { length, cruise: 0.42, maxTurn: 1.4 };
 }
 
@@ -86,49 +87,96 @@ function stillSpine(width: number, height: number, length: number, count: number
 
 /** The word may take at most this share of the hero's height (keeps ultrawide screens composed). */
 const WORD_MAX_HEIGHT = 0.46;
+/** Clear space kept between the bottom of the word and the top of the intro copy, in px. */
+const INTRO_GAP = 16;
+
+const isShown = (el: HTMLElement) => getComputedStyle(el).display !== "none";
+
+/** Gives `el` and its mirror copy the same font size. */
+function setSize(el: HTMLElement, mirror: HTMLElement | null, size: string) {
+  el.style.fontSize = size;
+  if (mirror) mirror.style.fontSize = size;
+}
 
 /**
- * Scales the latin word so it spans its parent's content box exactly, and never more; the mirror
- * copy follows. On very wide screens the height limit wins and the word sits centred instead.
+ * Latin word: spans its parent's content box exactly, and never more. On very wide screens the
+ * height limit wins, and on short ones it shrinks so it stays above the intro copy. It is centred,
+ * so its centre doesn't move as it scales and it may grow to twice the room between there and the intro.
  */
-function useFitWidth(ref: RefObject<HTMLElement | null>, mirror: RefObject<HTMLElement | null>) {
+function fitLatin(el: HTMLElement, mirror: HTMLElement | null, introTop: number) {
+  const parent = el.parentElement;
+  if (!parent) return;
+  const styles = getComputedStyle(parent);
+  const available = parent.clientWidth - parseFloat(styles.paddingLeft) - parseFloat(styles.paddingRight);
+  setSize(el, mirror, "100px");
+  const natural = el.getBoundingClientRect();
+  if (natural.width <= 0 || natural.height <= 0) return;
+  const centre = natural.top + natural.height / 2;
+  const byWidth = (100 * available) / natural.width;
+  const byHeight = (100 * parent.clientHeight * WORD_MAX_HEIGHT) / natural.height;
+  const byIntro = (100 * 2 * (introTop - INTRO_GAP - centre)) / natural.height;
+  setSize(el, mirror, `${Math.floor(Math.max(0, Math.min(byWidth, byHeight, byIntro)) * 100) / 100}px`);
+}
+
+/** Vertical kanji: keeps its CSS size unless that would run into the intro copy, then shrinks to fit. */
+function fitKanji(el: HTMLElement, mirror: HTMLElement | null, introTop: number) {
+  setSize(el, mirror, "");
+  const natural = el.getBoundingClientRect();
+  const room = introTop - INTRO_GAP - natural.top;
+  if (natural.height <= room || natural.height <= 0) return;
+  const size = parseFloat(getComputedStyle(el).fontSize) * (Math.max(0, room) / natural.height);
+  setSize(el, mirror, `${Math.floor(size * 100) / 100}px`);
+}
+
+interface TitleRefs {
+  latin: RefObject<HTMLElement | null>;
+  latinMirror: RefObject<HTMLElement | null>;
+  kanji: RefObject<HTMLElement | null>;
+  kanjiMirror: RefObject<HTMLElement | null>;
+  intro: RefObject<HTMLElement | null>;
+}
+
+/** Sizes whichever word is showing (latin, or kanji on portrait phones) to the room the hero gives it. */
+function useFitTitle({ latin, latinMirror, kanji, kanjiMirror, intro }: TitleRefs) {
   useLayoutEffect(() => {
-    const el = ref.current;
-    const parent = el?.parentElement;
-    if (!el || !parent) return;
+    const word = latin.current;
+    const tall = kanji.current;
+    const copy = intro.current;
+    const parent = word?.parentElement;
+    if (!word || !tall || !copy || !parent) return;
     const fit = () => {
-      if (getComputedStyle(el).display === "none") return;
-      const styles = getComputedStyle(parent);
-      const available = parent.clientWidth - parseFloat(styles.paddingLeft) - parseFloat(styles.paddingRight);
-      el.style.fontSize = "100px";
-      const natural = el.getBoundingClientRect();
-      if (natural.width > 0 && natural.height > 0) {
-        const byWidth = (100 * available) / natural.width;
-        const byHeight = (100 * parent.clientHeight * WORD_MAX_HEIGHT) / natural.height;
-        el.style.fontSize = `${Math.floor(Math.min(byWidth, byHeight) * 100) / 100}px`;
-      }
-      if (mirror.current) mirror.current.style.fontSize = el.style.fontSize;
+      const introTop = copy.getBoundingClientRect().top;
+      if (isShown(word)) fitLatin(word, latinMirror.current, introTop);
+      if (isShown(tall)) fitKanji(tall, kanjiMirror.current, introTop);
     };
     const observer = new ResizeObserver(fit);
     observer.observe(parent);
+    observer.observe(copy);
     // Reveal only after measuring with the real face, so the word never jumps size (no layout shift).
     const reveal = () => {
       fit();
-      el.dataset.fitted = "true";
-      if (mirror.current) mirror.current.dataset.fitted = "true";
+      for (const el of [word, latinMirror.current, tall, kanjiMirror.current]) if (el) el.dataset.fitted = "true";
     };
     document.fonts.ready.then(reveal).catch((error: unknown) => {
       console.error("Font loading failed", error);
       reveal();
     });
     return () => observer.disconnect();
-  }, [ref, mirror]);
+  }, [latin, latinMirror, kanji, kanjiMirror, intro]);
 }
 
-/** Where the koi roams on its own: over and under the word, tall on phones (the vertical kanji). */
-function swimArea(width: number, height: number): Ellipse {
-  const center = { x: width / 2, y: height * 0.49 };
-  return isPortrait(width, height) ? { center, rx: width * 0.28, ry: height * 0.27 } : { center, rx: width * 0.38, ry: height * 0.27 };
+/** How far above the intro copy her head turns back on phones, in body lengths (keeps her fins off the text). */
+const INTRO_CLEARANCE = 0.45;
+
+/**
+ * Where the koi roams on its own: over and under the word, tall on phones (the vertical kanji).
+ * On phones the intro copy fills the lower half, so there she stays above `floor` (its top edge).
+ */
+function swimArea(width: number, height: number, length: number, floor: number): Ellipse {
+  if (!isPortrait(width, height)) return { center: { x: width / 2, y: height * 0.49 }, rx: width * 0.38, ry: height * 0.27 };
+  const top = height * 0.22;
+  const bottom = Math.max(top + length * 0.8, Math.min(height * 0.76, floor - length * INTRO_CLEARANCE));
+  return { center: { x: width / 2, y: (top + bottom) / 2 }, rx: width * 0.28, ry: (bottom - top) / 2 };
 }
 
 export function Hero() {
@@ -137,6 +185,9 @@ export function Hero() {
   const fishRef = useRef<HTMLCanvasElement>(null);
   const wordRef = useRef<HTMLSpanElement>(null);
   const frontWordRef = useRef<HTMLSpanElement>(null);
+  const kanjiRef = useRef<HTMLSpanElement>(null);
+  const frontKanjiRef = useRef<HTMLSpanElement>(null);
+  const introRef = useRef<HTMLDivElement>(null);
   const canvases = useMemo(() => [fishRef], []);
   const pattern = useMemo(() => generatePattern("kohaku", HERO_SEED), []);
   const sim = useRef<Sim>({
@@ -154,7 +205,7 @@ export function Hero() {
     gulps: [],
   });
 
-  useFitWidth(wordRef, frontWordRef);
+  useFitTitle({ latin: wordRef, latinMirror: frontWordRef, kanji: kanjiRef, kanjiMirror: frontKanjiRef, intro: introRef });
 
   const step = useCallback((s: Sim, params: SwimParams, width: number, height: number, dt: number): Swimmer => {
     const now = nowSeconds();
@@ -169,7 +220,8 @@ export function Hero() {
     const following = s.target !== null && now < s.targetUntil;
     const lureAt = s.food ?? (following ? s.target : null);
     const lure = lureAt ? { target: lureAt, urgency: now < s.dartUntil ? 2.3 : s.food ? 1.5 : 1 } : null;
-    s.roamer = roamStep(s.roamer, s.rng, swimArea(width, height), params, dt, lure);
+    const floor = introRef.current?.offsetTop ?? height;
+    s.roamer = roamStep(s.roamer, s.rng, swimArea(width, height, params.length, floor), params, dt, lure);
     const swimmer = s.roamer.swimmer;
     if (s.food && inReach(swimmer, s.food, params)) {
       s.gulps = [...s.gulps, { x: s.food.x, y: s.food.y, mouth: mouthOf(swimmer, params), born: now }];
@@ -244,7 +296,7 @@ export function Hero() {
         <span className="hero__word hero__word--latin display" ref={wordRef} aria-hidden="true">
           <Letters text={WORD} front={FRONT_LATIN} layer="back" />
         </span>
-        <span className="hero__word hero__word--kanji jp" aria-hidden="true">
+        <span className="hero__word hero__word--kanji jp" ref={kanjiRef} aria-hidden="true">
           <Letters text={KANJI} front={FRONT_KANJI} layer="back" />
         </span>
       </h1>
@@ -254,13 +306,13 @@ export function Hero() {
         <span className="hero__word hero__word--latin display" ref={frontWordRef}>
           <Letters text={WORD} front={FRONT_LATIN} layer="front" />
         </span>
-        <span className="hero__word hero__word--kanji jp">
+        <span className="hero__word hero__word--kanji jp" ref={frontKanjiRef}>
           <Letters text={KANJI} front={FRONT_KANJI} layer="front" />
         </span>
       </div>
 
       <div className="hero__front">
-        <div className="hero__intro">
+        <div className="hero__intro" ref={introRef}>
           <p className="label">A field guide to living colour · Vol. 01</p>
           <p className="hero__lede">
             Eight koi varieties, drawn live in code. Learn to read a pattern the way judges do, then test your eye.

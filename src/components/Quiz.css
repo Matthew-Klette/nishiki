@@ -152,9 +152,16 @@
   .quiz__glyph {
     font-size: min(58vw, 22rem);
     left: auto;
-    right: -3vw;
+    right: 0;
     top: -6%;
     transform: none;
+  }
+}
+
+/* Portrait phones: a smaller bowl, so the fish and the answers fit on one screen. */
+@media (max-width: 860px) and (orientation: portrait) {
+  .quiz__bowl {
+    width: min(86%, 36rem, calc(46 * var(--vh)));
   }
 }
 

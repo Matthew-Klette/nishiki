@@ -29,7 +29,7 @@
 }
 
 .reading__plate {
-  --plate-h: clamp(22rem, 46vw, 40rem);
+  --plate-h: clamp(20rem, 34vw, 34rem);
   position: sticky;
   top: max(1rem, calc((calc(100 * var(--vh)) - var(--plate-h)) / 2));
   height: var(--plate-h);
@@ -155,4 +155,17 @@
 .reading__marker:focus-visible span {
   outline: 2px solid var(--sumi);
   outline-offset: 3px;
+}
+
+/* Landscape phones: diagram and legend side by side, the diagram held in view while the legend scrolls. */
+@media (max-height: 500px) and (min-aspect-ratio: 4/5) {
+  .reading__grid {
+    grid-template-columns: minmax(0, 1.2fr) minmax(16rem, 1fr);
+  }
+  .reading__plate {
+    --plate-h: max(calc(100 * var(--vh) - 2rem), 18rem);
+    position: sticky;
+    top: 1rem;
+    height: var(--plate-h);
+  }
 }
